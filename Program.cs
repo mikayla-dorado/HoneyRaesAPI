@@ -130,7 +130,11 @@ app.MapGet("/servicetickets", () =>
 app.MapGet("/servicetickets/{id}", (int id) =>
 {
     ServiceTicket serviceTicket = serviceTickets.FirstOrDefault(st => st.Id == id);
-    return new ServiceTicketDTO
+    if (serviceTicket == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(new ServiceTicketDTO
     {
         Id = serviceTicket.Id,
         CustomerId = serviceTicket.CustomerId,
@@ -138,7 +142,7 @@ app.MapGet("/servicetickets/{id}", (int id) =>
         Description = serviceTicket.Description,
         Emergency = serviceTicket.Emergency,
         DateCompleted = serviceTicket.DateCompleted
-    };
+    });
 });
 
 
@@ -155,12 +159,16 @@ app.MapGet("/employees", () =>
 app.MapGet("/employees/{id}", (int id) =>
 {
     Employee employee = employees.FirstOrDefault(e => e.Id == id);
-    return new EmployeeDTO
+    if (employee == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(new EmployeeDTO
     {
         Id = employee.Id,
         Name = employee.Name,
         Specialty = employee.Specialty
-    };
+    });
 });
 
 app.MapGet("/customers", () =>
@@ -176,12 +184,16 @@ app.MapGet("/customers", () =>
 app.MapGet("/customers/{id}", (int id) =>
 {
     Customer customer = customers.FirstOrDefault(c => c.Id == id);
-    return new CustomerDTO
+    if (customer == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(new CustomerDTO
     {
         Id = customer.Id,
         Name = customer.Name,
         Address = customer.Address
-    };
+    });
 });
 
 app.Run();
