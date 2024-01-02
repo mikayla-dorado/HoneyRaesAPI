@@ -295,6 +295,7 @@ app.MapGet("/employees/{id}", (int id) =>
                 Emergency = reader.GetBoolean(reader.GetOrdinal("Emergency")),
                 // Npgsql can't automatically convert NULL in the database to C# null, so we have to check whether it's null before trying to get it
                 DateCompleted = reader.IsDBNull(reader.GetOrdinal("DateCompleted")) ? null : reader.GetDateTime(reader.GetOrdinal("DateCompleted"))
+
             });
         }
     }
@@ -423,6 +424,7 @@ app.MapPost("/employees", (Employee employee) =>
     return employee;
 });
 
+
 app.MapPut("/employees/{id}", (int id, Employee employee) =>
 {
     if (id != employee.Id)
@@ -445,6 +447,22 @@ app.MapPut("/employees/{id}", (int id, Employee employee) =>
     command.ExecuteNonQuery();
     return Results.NoContent();
 });
+
+//the ExecuteNonQuery is used bc we dont need any info back from the DB as long as the delete was succesful
+//the 204 message indicates that it was succesful 
+app.MapDelete("/employees/{id}", (int id) =>
+{
+    using NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+    connection.Open();
+    using NpgsqlCommand command = connection.CreateCommand();
+    command.CommandText = @"
+        DELETE FROM Employee WHERE Id=@id
+    ";
+    command.Parameters.AddWithValue("@id", id);
+    command.ExecuteNonQuery();
+    return Results.NoContent();
+});
+
 
 app.Run();
 
